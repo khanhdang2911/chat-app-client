@@ -8,8 +8,13 @@ import { useDispatch } from 'react-redux'
 import authSlice from '../../redux/authSlice'
 import { login } from '../../api/auth.api'
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuth0 } from '@auth0/auth0-react'
 
 export default function Login() {
+  const { loginWithPopup, isAuthenticated, user, logout } = useAuth0()
+  console.log('User', user)
+  console.log('isAuthenticated', isAuthenticated)
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
@@ -34,14 +39,29 @@ export default function Login() {
     }
   }
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     // Implement Google login logic here
-    console.log('Google login attempt')
+    try {
+      await loginWithPopup({
+        authorizationParams: {
+          connection: 'google-oauth2'
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  const handleFacebookLogin = () => {
-    // Implement Facebook login logic here
-    console.log('Facebook login attempt')
+  const handleFacebookLogin = async () => {
+    try {
+      await loginWithPopup({
+        authorizationParams: {
+          connection: 'facebook'
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -110,6 +130,14 @@ export default function Login() {
             <Button color='light' onClick={handleFacebookLogin} className='w-full flex items-center justify-center'>
               <FaFacebook className='mr-2 mt-1' />
               Facebook
+            </Button>
+            <Button
+              color='light'
+              onClick={() => logout({ logoutParams: { returnTo: 'http://localhost:3000/login' } })}
+              className='w-full flex items-center justify-center'
+            >
+              <FaFacebook className='mr-2 mt-1' />
+              Logout
             </Button>
           </div>
         </div>
