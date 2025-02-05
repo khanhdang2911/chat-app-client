@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { privateRoutes, publicRoutes } from './routes/routes'
 import React from 'react'
 import PrivateRoute from './components/PrivateRoute/PrivateRoute'
+
 function App() {
   return (
     <>
