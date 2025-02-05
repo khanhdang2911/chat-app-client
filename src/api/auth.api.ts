@@ -1,15 +1,23 @@
-import axios, { refreshInstance } from '../config/httpRequest'
+import axios, { auth0Instance, refreshInstance } from '../config/httpRequest'
 import { IUserLogin, IUserRegister } from '../interfaces/User'
 
 const register = async (data: IUserRegister) => {
   const response = await axios.post('/auth/register', data)
-
   return response.data
 }
 
 const login = async (data: IUserLogin) => {
   const response = await axios.post('/auth/login', data)
+  return response.data
+}
 
+const loginWithAuth0 = async (data: any, accessToken: string) => {
+  const response = await auth0Instance.post('/auth/login-auth0', data, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
   return response.data
 }
 
@@ -29,4 +37,4 @@ const refreshToken = async () => {
   return response.data
 }
 
-export { register, login, logout, refreshToken }
+export { register, login, logout, refreshToken, loginWithAuth0 }

@@ -1,19 +1,19 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, TextInput, Label, Button, Alert, Checkbox } from 'flowbite-react'
 import { HiMail, HiLockClosed } from 'react-icons/hi'
-import { FaGoogle, FaFacebook } from 'react-icons/fa'
 import { useDispatch } from 'react-redux'
 import authSlice from '../../redux/authSlice'
-import { login } from '../../api/auth.api'
+import { login, loginWithAuth0 } from '../../api/auth.api'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react'
+import Google from '../../assets/icons/google.svg'
+import Microsoft from '../../assets/icons/microsoft.svg'
 
 export default function Login() {
-  const { loginWithPopup, isAuthenticated, user, logout } = useAuth0()
-  console.log('User', user)
-  console.log('isAuthenticated', isAuthenticated)
+  const { loginWithRedirect, isAuthenticated, user, getAccessTokenSilently } = useAuth0()
+
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -21,6 +21,24 @@ export default function Login() {
   const [error, setError] = useState('')
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  useEffect(() => {
+    const handleLoginWithAuth0 = async () => {
+      const accessToken = await getAccessTokenSilently()
+      console.log('TRuoc khi login with auth0', user, accessToken)
+      const response = await loginWithAuth0(user, accessToken)
+      if (response.status == 'success') {
+        dispatch(authSlice.actions.setUser(response.data))
+      }
+      navigate('/')
+    }
+    try {
+      if (isAuthenticated) {
+        handleLoginWithAuth0()
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }, [isAuthenticated])
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email || !password) {
@@ -32,7 +50,6 @@ export default function Login() {
       if (response.status == 'success') {
         dispatch(authSlice.actions.setUser(response.data))
       }
-      //navigate('/')
       navigate('/')
     } catch (error) {
       setError((error as any)?.response?.data.message)
@@ -40,9 +57,8 @@ export default function Login() {
   }
 
   const handleGoogleLogin = async () => {
-    // Implement Google login logic here
     try {
-      await loginWithPopup({
+      await loginWithRedirect({
         authorizationParams: {
           connection: 'google-oauth2'
         }
@@ -52,11 +68,11 @@ export default function Login() {
     }
   }
 
-  const handleFacebookLogin = async () => {
+  const handleMicrosoftLogin = async () => {
     try {
-      await loginWithPopup({
+      await loginWithRedirect({
         authorizationParams: {
-          connection: 'facebook'
+          connection: 'windowslive'
         }
       })
     } catch (error) {
@@ -67,7 +83,7 @@ export default function Login() {
   return (
     <div className='flex items-center justify-center min-h-screen bg-gray-100'>
       <Card className='w-full max-w-[90%] sm:max-w-md'>
-        <h2 className='text-2xl font-bold text-center mb-6 text-gray-800'>Welcome Back CloudTalk </h2>
+        <h2 className='text-2xl font-bold text-center mb-6 text-gray-800'>Welcome Back to CloudTalk </h2>
         <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
           <div>
             <Label htmlFor='email' value='Email' className='text-sm font-medium text-gray-700' />
@@ -124,20 +140,12 @@ export default function Login() {
           </div>
           <div className='mt-6 grid grid-cols-2 gap-3'>
             <Button color='light' onClick={handleGoogleLogin} className='w-full flex items-center justify-center'>
-              <FaGoogle className='mr-2 mt-1' />
-              Google
+              <img className='w-4 h-4 mt-0.5 mr-1' src={Google} alt='google' />
+              <p>Google</p>
             </Button>
-            <Button color='light' onClick={handleFacebookLogin} className='w-full flex items-center justify-center'>
-              <FaFacebook className='mr-2 mt-1' />
-              Facebook
-            </Button>
-            <Button
-              color='light'
-              onClick={() => logout({ logoutParams: { returnTo: 'http://localhost:3000/login' } })}
-              className='w-full flex items-center justify-center'
-            >
-              <FaFacebook className='mr-2 mt-1' />
-              Logout
+            <Button color='light' onClick={handleMicrosoftLogin} className='w-full flex items-center justify-center'>
+              <img className='w-5 h-5 mt-0.5 mr-1' src={Microsoft} alt='microsoft' />
+              <p>Microsoft Account</p>
             </Button>
           </div>
         </div>

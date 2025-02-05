@@ -50,7 +50,7 @@ const ChatList: React.FC<ChatListProps> = ({}) => {
       try {
         const response = await getChatsByUser()
         setChats(response.data)
-        setChoosenChat(response.data[0]._id)
+        setChoosenChat(response?.data[0]?._id)
       } catch (error) {
         console.log(error)
       }

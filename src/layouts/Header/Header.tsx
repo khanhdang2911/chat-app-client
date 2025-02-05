@@ -1,18 +1,24 @@
 import { Button, Avatar, Dropdown } from 'flowbite-react'
-import { FaFacebookMessenger, FaUserCircle, FaSignOutAlt } from 'react-icons/fa'
+import { FaUserCircle, FaSignOutAlt } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { getAuthSelector } from '../../redux/selectors'
-import { logout } from '../../api/auth.api'
+import { logout as logoutApi } from '../../api/auth.api'
 import authSlice from '../../redux/authSlice'
 import { useNavigate } from 'react-router-dom'
+import { useAuth0 } from '@auth0/auth0-react'
+import Logo from '../../assets/icons/Logo.svg'
 export default function Header() {
   const auth: any = useSelector(getAuthSelector)
+  const { logout } = useAuth0()
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const handleLogout = async () => {
     try {
-      await logout()
+      //logout auth0
+      await logout({ logoutParams: { returnTo: `${window.location.origin}/login` } })
+      //logout backend
+      await logoutApi()
       dispatch(authSlice.actions.logout())
       navigate('/login')
     } catch (error) {
@@ -25,7 +31,7 @@ export default function Header() {
     <header className='bg-white shadow-sm h-[8vh] flex items-center'>
       <div className='w-full flex h-14 items-center justify-between px-4'>
         <Link className='flex items-center text-blue-500' to='/'>
-          <FaFacebookMessenger className='h-8 w-8 mr-2' />
+          <img src={Logo} alt='' className='h-8 w-8 mr-2' />
           <span className='text-xl font-semibold'>CloudTalk </span>
         </Link>
 

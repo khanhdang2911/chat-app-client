@@ -1,8 +1,9 @@
 import axios, { InternalAxiosRequestConfig } from 'axios'
 import { store } from '../redux/store'
 import { jwtDecode } from 'jwt-decode'
-import { refreshToken } from '../api/auth.api'
+import { logout, refreshToken } from '../api/auth.api'
 import authSlice from '../redux/authSlice'
+
 const instance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_API_URL,
   withCredentials: true
@@ -12,6 +13,12 @@ const refreshInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_API_URL,
   withCredentials: true
 })
+
+const auth0Instance = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_API_URL,
+  withCredentials: true
+})
+
 const handleRefreshToken = async (config: InternalAxiosRequestConfig<any>) => {
   try {
     const auth = store.getState().auth
@@ -22,12 +29,18 @@ const handleRefreshToken = async (config: InternalAxiosRequestConfig<any>) => {
       const currentTime = Date.now() / 1000
       if (decodedToken?.exp && currentTime - decodedToken.exp > 0) {
         const response = await refreshToken()
-        const newAccessToken = response.data.accessToken
-        config.headers.Authorization = `Bearer ${newAccessToken}`
-        store.dispatch(authSlice.actions.setNewAccessToken(newAccessToken))
+        if (response.status === 'success') {
+          const newAccessToken = response.data.accessToken
+          config.headers.Authorization = `Bearer ${newAccessToken}`
+          store.dispatch(authSlice.actions.setNewAccessToken(newAccessToken))
+        } else {
+          store.dispatch(authSlice.actions.logout())
+          await logout()
+        }
       }
     }
   } catch (error) {
+    await logout()
     return Promise.reject(error)
   }
   return config
@@ -87,4 +100,4 @@ refreshInstance.interceptors.response.use(
 )
 
 export default instance
-export { refreshInstance }
+export { refreshInstance, auth0Instance }
