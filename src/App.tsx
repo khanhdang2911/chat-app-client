@@ -1,9 +1,14 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { privateRoutes, publicRoutes } from './routes/routes'
-import React from 'react'
+import React, { useEffect } from 'react'
 import PrivateRoute from './components/PrivateRoute/PrivateRoute'
-
+import { injectAuth0Functions } from './config/httpRequest'
+import { useAuth0 } from '@auth0/auth0-react'
 function App() {
+  const { logout } = useAuth0()
+  useEffect(() => {
+    injectAuth0Functions(logout)
+  }, [])
   return (
     <>
       <Router>

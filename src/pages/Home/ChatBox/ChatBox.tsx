@@ -87,8 +87,9 @@ const ChatBox = () => {
         setChats((prev: IChatGet[]) => {
           const index = prev.findIndex((chat) => chat._id === chatInfo._id)
           if (index !== -1) {
-            prev[index] = chatInfo
+            prev.splice(index, 1)
           }
+          prev.unshift(chatInfo)
           return [...prev]
         })
       })
@@ -106,7 +107,7 @@ const ChatBox = () => {
   return (
     <div className='flex-1 flex flex-col w-full md:w-auto'>
       {/* Chat Header */}
-      <ChatHeader />
+      {chatCurrentInfo && <ChatHeader />}
 
       {/* Messages */}
       <div className='flex-1 overflow-y-auto p-4 space-y-4 bg-white'>

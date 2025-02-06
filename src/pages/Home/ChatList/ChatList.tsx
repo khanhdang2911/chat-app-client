@@ -29,7 +29,6 @@ const ChatList: React.FC<ChatListProps> = ({}) => {
     setChats,
     setUserIdCreateChat,
     userIdCreateChat,
-    users,
     chats,
     setUsersOnline
   } = homeContext
@@ -147,7 +146,7 @@ const ChatList: React.FC<ChatListProps> = ({}) => {
             value={searchTerm}
             onChange={(e) => handleSearchFocus(e)}
             icon={HiSearch}
-            placeholder='Search CloudTalk '
+            placeholder='Search your friends ...'
             className='bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500'
           />
         </div>
@@ -181,10 +180,17 @@ const ChatList: React.FC<ChatListProps> = ({}) => {
         </div>
       )}
       {/* Chat List */}
-      <div className='overflow-y-auto h-[calc(100%-200px)] custom-scroll relative z-10'>
-        {chats &&
-          chats.map((chat) => <UserInChatList key={chat._id} chat={chat} onClick={() => handleChooseChat(chat)} />)}
-      </div>
+      {chats.length > 0 ? (
+        <div className='overflow-y-auto h-[calc(100%-200px)] custom-scroll relative z-10'>
+          {chats &&
+            chats.map((chat) => <UserInChatList key={chat._id} chat={chat} onClick={() => handleChooseChat(chat)} />)}
+        </div>
+      ) : (
+        <div className='flex flex-col items-center justify-center p-4 text-gray-400'>
+          <span className='mb-2 text-xl font-semibold'>No chat found</span>
+          <p className='text-sm'>Start a new conversation to see your chats here.</p>
+        </div>
+      )}
       {/* Footer */}
       <Footer />
     </div>

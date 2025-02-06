@@ -14,7 +14,6 @@ import Microsoft from '../../assets/icons/microsoft.svg'
 export default function Login() {
   const { loginWithRedirect, isAuthenticated, user, getAccessTokenSilently } = useAuth0()
 
-
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
@@ -24,7 +23,6 @@ export default function Login() {
   useEffect(() => {
     const handleLoginWithAuth0 = async () => {
       const accessToken = await getAccessTokenSilently()
-      console.log('TRuoc khi login with auth0', user, accessToken)
       const response = await loginWithAuth0(user, accessToken)
       if (response.status == 'success') {
         dispatch(authSlice.actions.setUser(response.data))

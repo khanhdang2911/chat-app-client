@@ -19,6 +19,11 @@ const auth0Instance = axios.create({
   withCredentials: true
 })
 
+let logoutAuth0: any
+export const injectAuth0Functions = (_logout: any) => {
+  logoutAuth0 = _logout
+}
+
 const handleRefreshToken = async (config: InternalAxiosRequestConfig<any>) => {
   try {
     const auth = store.getState().auth
@@ -36,11 +41,13 @@ const handleRefreshToken = async (config: InternalAxiosRequestConfig<any>) => {
         } else {
           store.dispatch(authSlice.actions.logout())
           await logout()
+          logoutAuth0({ logoutParams: { returnTo: `${window.location.origin}/login` } })
         }
       }
     }
   } catch (error) {
     await logout()
+    logoutAuth0({ logoutParams: { returnTo: `${window.location.origin}/login` } })
     return Promise.reject(error)
   }
   return config
