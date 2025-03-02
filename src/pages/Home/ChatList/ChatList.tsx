@@ -13,9 +13,13 @@ import { socket } from '../../../socket/socket'
 import { changeStatusMessage } from '../../../api/message.api'
 import useDebounce from '../../../hooks/useDebounce'
 import { IUserGet } from '../../../interfaces/User'
+import ToastCustom from '../../../components/ToastCustom.tsx/ToastCustom'
+import { toast } from 'react-toastify'
+import LoadingOverlay from '../../../components/LoadingPage/Loading'
 
 interface ChatListProps {}
 const ChatList: React.FC<ChatListProps> = ({}) => {
+  const [isLoading, setIsLoading] = useState(false)
   const auth: any = useSelector(getAuthSelector)
   const homeContext = useContext(HomeContext)
   if (!homeContext) {
@@ -38,7 +42,7 @@ const ChatList: React.FC<ChatListProps> = ({}) => {
         const response = await getAllUsers()
         setUsers(response.data)
       } catch (error) {
-        console.log(error)
+        toast.error('Error when find all your friends.')
       }
     }
     fetchUsers()
@@ -47,11 +51,14 @@ const ChatList: React.FC<ChatListProps> = ({}) => {
   useEffect(() => {
     const fetchChats = async () => {
       try {
+        setIsLoading(true)
         const response = await getChatsByUser()
         setChats(response.data)
         setChoosenChat(response?.data[0]?._id)
+        setIsLoading(false)
       } catch (error) {
-        console.log(error)
+        setIsLoading(false)
+        toast.error('Error when find all your chats.')
       }
     }
     fetchChats()
@@ -67,7 +74,7 @@ const ChatList: React.FC<ChatListProps> = ({}) => {
         const response = await createChat(chatCreate)
         setChats([...chats, response.data])
       } catch (error) {
-        console.log(error)
+        toast.error('Error when create chat.')
       }
     }
     if (userIdCreateChat) {
@@ -95,7 +102,7 @@ const ChatList: React.FC<ChatListProps> = ({}) => {
         const response = await searchUser(searchTerm)
         setSearchResults(response.data)
       } catch (error) {
-        console.log(error)
+        toast.error('Error when search user.')
       }
     }
     if (searchTerm) {
@@ -126,7 +133,7 @@ const ChatList: React.FC<ChatListProps> = ({}) => {
         setChats(getChats.data)
       }
     } catch (error) {
-      console.log(error)
+      toast.error('Error when change status message.')
     }
   }
   useEffect(() => {
@@ -182,8 +189,7 @@ const ChatList: React.FC<ChatListProps> = ({}) => {
       {/* Chat List */}
       {chats.length > 0 ? (
         <div className='overflow-y-auto h-[calc(100%-200px)] custom-scroll relative z-10'>
-          {chats &&
-            chats.map((chat) => <UserInChatList key={chat._id} chat={chat} onClick={() => handleChooseChat(chat)} />)}
+          {chats?.map((chat) => <UserInChatList key={chat._id} chat={chat} onClick={() => handleChooseChat(chat)} />)}
         </div>
       ) : (
         <div className='flex flex-col items-center justify-center p-4 text-gray-400'>
@@ -193,6 +199,8 @@ const ChatList: React.FC<ChatListProps> = ({}) => {
       )}
       {/* Footer */}
       <Footer />
+      <ToastCustom />
+      <LoadingOverlay isLoading={isLoading} />
     </div>
   )
 }

@@ -1,24 +1,26 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Card, TextInput, Label, Button, Alert, Radio } from 'flowbite-react'
+import { Card, TextInput, Label, Button, Radio } from 'flowbite-react'
 import { HiMail, HiLockClosed, HiUser } from 'react-icons/hi'
-import { FaGoogle, FaFacebook } from 'react-icons/fa'
+import Google from '../../assets/icons/google.svg'
+import Microsoft from '../../assets/icons/microsoft.svg'
 import { register } from '../../api/auth.api'
 import { Link, useNavigate } from 'react-router-dom'
+import ToastCustom from '../../components/ToastCustom.tsx/ToastCustom'
+import { toast } from 'react-toastify'
 export default function Register() {
   const [firstname, setFirstname] = useState('')
   const [lastname, setLastname] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [gender, setGender] = useState('')
-  const [error, setError] = useState('')
   const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!firstname || !lastname || !email || !password || !gender) {
-      setError('Please fill in all fields')
+      toast.error('Please fill all fields.')
       return
     }
     // Implement registration logic here
@@ -33,18 +35,8 @@ export default function Register() {
         navigate('/login')
       }
     } catch (error) {
-      setError((error as any)?.response?.data.message)
+      toast.error((error as any)?.response?.data.message)
     }
-  }
-
-  const handleGoogleRegister = () => {
-    // Implement Google registration logic here
-    console.log('Google registration attempt')
-  }
-
-  const handleFacebookRegister = () => {
-    // Implement Facebook registration logic here
-    console.log('Facebook registration attempt')
   }
 
   return (
@@ -141,11 +133,6 @@ export default function Register() {
             Sign Up
           </Button>
         </form>
-        {error && (
-          <Alert color='failure' className='mt-4'>
-            {error}
-          </Alert>
-        )}
         <div className='mt-4'>
           <div className='relative'>
             <div className='absolute inset-0 flex items-center'>
@@ -156,13 +143,13 @@ export default function Register() {
             </div>
           </div>
           <div className='mt-6 grid grid-cols-2 gap-3'>
-            <Button color='light' onClick={handleGoogleRegister} className='w-full flex items-center justify-center'>
-              <FaGoogle className='mr-2 mt-1' />
-              <span>Google</span>
+            <Button color='light' className='w-full flex items-center justify-center'>
+              <img className='w-4 h-4 mt-0.5 mr-1' src={Google} alt='google' />
+              <p>Google</p>
             </Button>
-            <Button color='light' onClick={handleFacebookRegister} className='w-full flex items-center justify-center'>
-              <FaFacebook className='mr-2 mt-1' />
-              Facebook
+            <Button color='light' className='w-full flex items-center justify-center'>
+              <img className='w-5 h-5 mt-0.5 mr-1' src={Microsoft} alt='microsoft' />
+              <p>Microsoft Account</p>
             </Button>
           </div>
         </div>
@@ -173,6 +160,7 @@ export default function Register() {
           </Link>
         </p>
       </Card>
+      <ToastCustom />
     </div>
   )
 }

@@ -13,6 +13,8 @@ import { useSelector } from 'react-redux'
 import { getAuthSelector } from '../../../redux/selectors'
 import { socket } from '../../../socket/socket'
 import { IChatGet } from '../../../interfaces/Chat'
+import ToastCustom from '../../../components/ToastCustom.tsx/ToastCustom'
+import { toast } from 'react-toastify'
 
 const ChatBox = () => {
   const auth: any = useSelector(getAuthSelector)
@@ -43,7 +45,7 @@ const ChatBox = () => {
         socket.emit('send-message', dataResponse)
       }
     } catch (error) {
-      console.log(error)
+      toast.error('Error when send message, login again and try again.')
     }
   }
   const sendMessage = async () => {
@@ -63,7 +65,7 @@ const ChatBox = () => {
         socket.emit('send-message', dataResponse)
       }
     } catch (error) {
-      console.log(error)
+      toast.error('Error when send message, login again and try again.')
     }
 
     setInputMessage('')
@@ -160,6 +162,7 @@ const ChatBox = () => {
           </Button>
         </div>
       </div>
+      <ToastCustom />
     </div>
   )
 }

@@ -3,6 +3,7 @@ import DefaultLayout from '../layouts/DefaultLayout/DefaultLayout'
 import Home from '../pages/Home/Home'
 import Login from '../pages/Login/Login'
 import Register from '../pages/Register/Register'
+import VerifyPage from '../pages/VerifyPage/VerifyPage'
 interface IRoute {
   path: string
   component: any
@@ -22,6 +23,11 @@ const publicRoutes: IRoute[] = [
   {
     path: routes.notFound,
     component: null,
+    layout: null
+  },
+  {
+    path: routes.verify,
+    component: VerifyPage,
     layout: null
   }
 ]

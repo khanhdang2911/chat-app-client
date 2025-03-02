@@ -1,4 +1,4 @@
-import axios, { auth0Instance, refreshInstance } from '../config/httpRequest'
+import axios, { normalInstance, refreshInstance } from '../config/httpRequest'
 import { IUserLogin, IUserRegister } from '../interfaces/User'
 
 const register = async (data: IUserRegister) => {
@@ -12,7 +12,7 @@ const login = async (data: IUserLogin) => {
 }
 
 const loginWithAuth0 = async (data: any, accessToken: string) => {
-  const response = await auth0Instance.post('/auth/login-auth0', data, {
+  const response = await normalInstance.post('/auth/login-auth0', data, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`
@@ -22,7 +22,7 @@ const loginWithAuth0 = async (data: any, accessToken: string) => {
 }
 
 const logout = async () => {
-  const response = await axios.get('/auth/logout')
+  const response = await refreshInstance.get('/auth/logout')
   return response.data
 }
 

@@ -3,21 +3,23 @@
 import React, { useEffect, useState } from 'react'
 import { Card, TextInput, Label, Button, Alert, Checkbox } from 'flowbite-react'
 import { HiMail, HiLockClosed } from 'react-icons/hi'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import authSlice from '../../redux/authSlice'
 import { login, loginWithAuth0 } from '../../api/auth.api'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react'
 import Google from '../../assets/icons/google.svg'
 import Microsoft from '../../assets/icons/microsoft.svg'
-
+import LoadingOverlay from '../../components/LoadingPage/Loading'
+import { toast, ToastContainer } from 'react-toastify'
+import { getAuthSelector } from '../../redux/selectors'
 export default function Login() {
+  const auth: any = useSelector(getAuthSelector)
   const { loginWithRedirect, isAuthenticated, user, getAccessTokenSilently } = useAuth0()
-
+  const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
-  const [error, setError] = useState('')
   const dispatch = useDispatch()
   const navigate = useNavigate()
   useEffect(() => {
@@ -34,23 +36,26 @@ export default function Login() {
         handleLoginWithAuth0()
       }
     } catch (error) {
-      console.log(error)
+      toast.error('Error when login with Auth0.')
     }
   }, [isAuthenticated])
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email || !password) {
-      setError('Please enter both email and password')
+      toast.error('Please enter both email and password.')
       return
     }
     try {
+      setIsLoading(true)
       const response = await login({ email, password })
       if (response.status == 'success') {
         dispatch(authSlice.actions.setUser(response.data))
       }
+      setIsLoading(false)
       navigate('/')
     } catch (error) {
-      setError((error as any)?.response?.data.message)
+      setIsLoading(false)
+      toast.error((error as any)?.response?.data.message)
     }
   }
 
@@ -62,7 +67,7 @@ export default function Login() {
         }
       })
     } catch (error) {
-      console.log(error)
+      toast.error('Error when login with Google.')
     }
   }
 
@@ -74,8 +79,12 @@ export default function Login() {
         }
       })
     } catch (error) {
-      console.log(error)
+      toast.error('Error when login with Microsoft.')
     }
+  }
+  if (auth.isAuthenticated) {
+    navigate('/')
+    return null
   }
 
   return (
@@ -122,11 +131,7 @@ export default function Login() {
             Sign In
           </Button>
         </form>
-        {error && (
-          <Alert color='failure' className='mt-4'>
-            {error}
-          </Alert>
-        )}
+
         <div className='mt-4'>
           <div className='relative'>
             <div className='absolute inset-0 flex items-center'>
@@ -154,6 +159,8 @@ export default function Login() {
           </Link>
         </p>
       </Card>
+      <LoadingOverlay isLoading={isLoading} />
+      <ToastContainer />
     </div>
   )
 }
