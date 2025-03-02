@@ -8,6 +8,8 @@ import authSlice from '../../redux/authSlice'
 import { useNavigate } from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react'
 import Logo from '../../assets/icons/Logo.svg'
+import ToastCustom from '../../components/ToastCustom.tsx/ToastCustom'
+import { toast } from 'react-toastify'
 export default function Header() {
   const auth: any = useSelector(getAuthSelector)
   const { logout } = useAuth0()
@@ -22,7 +24,7 @@ export default function Header() {
       dispatch(authSlice.actions.logout())
       navigate('/login')
     } catch (error) {
-      console.log('error', error)
+      toast.error('Error when logging out.')
       dispatch(authSlice.actions.logout())
       navigate('/login')
     }
@@ -62,6 +64,7 @@ export default function Header() {
           )}
         </div>
       </div>
+      <ToastCustom/>
     </header>
   )
 }
