@@ -13,7 +13,6 @@ import { useSelector } from 'react-redux'
 import { getAuthSelector } from '../../../redux/selectors'
 import { socket } from '../../../socket/socket'
 import { IChatGet } from '../../../interfaces/Chat'
-import ToastCustom from '../../../components/ToastCustom.tsx/ToastCustom'
 import { toast } from 'react-toastify'
 
 const ChatBox = () => {
@@ -162,7 +161,6 @@ const ChatBox = () => {
           </Button>
         </div>
       </div>
-      <ToastCustom />
     </div>
   )
 }

@@ -8,7 +8,6 @@ import authSlice from '../../redux/authSlice'
 import { useNavigate } from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react'
 import Logo from '../../assets/icons/Logo.svg'
-import ToastCustom from '../../components/ToastCustom.tsx/ToastCustom'
 import { toast } from 'react-toastify'
 export default function Header() {
   const auth: any = useSelector(getAuthSelector)
@@ -64,7 +63,6 @@ export default function Header() {
           )}
         </div>
       </div>
-      <ToastCustom/>
     </header>
   )
 }

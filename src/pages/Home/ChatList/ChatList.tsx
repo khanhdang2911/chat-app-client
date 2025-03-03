@@ -13,7 +13,6 @@ import { socket } from '../../../socket/socket'
 import { changeStatusMessage } from '../../../api/message.api'
 import useDebounce from '../../../hooks/useDebounce'
 import { IUserGet } from '../../../interfaces/User'
-import ToastCustom from '../../../components/ToastCustom.tsx/ToastCustom'
 import { toast } from 'react-toastify'
 import LoadingOverlay from '../../../components/LoadingPage/Loading'
 
@@ -133,7 +132,6 @@ const ChatList: React.FC<ChatListProps> = ({}) => {
         setChats(getChats.data)
       }
     } catch (error) {
-      toast.error('Error when change status message.')
     }
   }
   useEffect(() => {
@@ -199,7 +197,6 @@ const ChatList: React.FC<ChatListProps> = ({}) => {
       )}
       {/* Footer */}
       <Footer />
-      <ToastCustom />
       <LoadingOverlay isLoading={isLoading} />
     </div>
   )
