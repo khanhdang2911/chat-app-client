@@ -7,7 +7,6 @@ import Google from '../../assets/icons/google.svg'
 import Microsoft from '../../assets/icons/microsoft.svg'
 import { register } from '../../api/auth.api'
 import { Link, useNavigate } from 'react-router-dom'
-import ToastCustom from '../../components/ToastCustom.tsx/ToastCustom'
 import { toast } from 'react-toastify'
 export default function Register() {
   const [firstname, setFirstname] = useState('')
@@ -160,7 +159,6 @@ export default function Register() {
           </Link>
         </p>
       </Card>
-      <ToastCustom />
     </div>
   )
 }

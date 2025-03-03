@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
 import Header from '../Header/Header'
+import ToastCustom from '../../components/ToastCustom.tsx/ToastCustom'
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
   return (
@@ -7,6 +8,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
       <Header />
       <div className='bg-gray-200 h-0.5 w-full'></div>
       {children}
+      <ToastCustom />
     </div>
   )
 }
