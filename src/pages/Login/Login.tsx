@@ -148,7 +148,7 @@ export default function Login() {
             </Button>
             <Button color='light' onClick={handleMicrosoftLogin} className='w-full flex items-center justify-center'>
               <img className='w-5 h-5 mt-0.5 mr-1' src={Microsoft} alt='microsoft' />
-              <p>Microsoft Account</p>
+              <p>Microsoft</p>
             </Button>
           </div>
         </div>
