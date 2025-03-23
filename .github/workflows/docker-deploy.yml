@@ -1,0 +1,42 @@
+name: Cloud-talk Deploy production with docker
+on:
+  pull_request:
+    branches: ['main']
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    outputs:
+      commit_sha: ${{ steps.get_commit_sha.outputs.commit_sha }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Create .env file
+        run: echo "${{ secrets.ENV_PRODUCTION }}" > .env
+      - name: Build docker image
+        run: docker build -t cloud-talk-client .
+      - name: Get commit SHA
+        id: get_commit_sha
+        run: echo "commit_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Login to docker hub
+        run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+      - name: Push docker image
+        run: |
+          docker tag cloud-talk-client "${{ secrets.DOCKER_USERNAME }}/cloud-talk-client:${{ steps.get_commit_sha.outputs.commit_sha }}"
+          docker push "${{ secrets.DOCKER_USERNAME }}/cloud-talk-client:${{ steps.get_commit_sha.outputs.commit_sha }}"
+  deploy-production:
+    runs-on: ubuntu-22.04
+    needs: build
+    steps:
+      - name: SSH to production
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          password: ${{ secrets.PRODUCTION_PASSWORD }}
+          script: |
+            sudo docker pull "${{ secrets.DOCKER_USERNAME }}/cloud-talk-client:${{ needs.build.outputs.commit_sha }}"
+            sudo docker stop cloud-talk-client || true
+            sudo docker rm cloud-talk-client || true
+            sudo docker images | grep "${{ secrets.DOCKER_USERNAME }}/cloud-talk-client" | grep -v "${{ needs.build.outputs.commit_sha }}" | awk '{print $3}' | xargs -r sudo docker rmi || true
+            sudo docker image prune -f || true
+            sudo docker run -dp 3000:80 --name cloud-talk-client "${{ secrets.DOCKER_USERNAME }}/cloud-talk-client:${{ needs.build.outputs.commit_sha }}"
